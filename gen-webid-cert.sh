@@ -80,8 +80,8 @@ UID_default="$WEBID"
 [ req_ext ]
 subjectKeyIdentifier = hash
 subjectAltName = critical,@subject_alt
-basicConstraints = critical,CA:false
-extendedKeyUsage = critical,clientAuth
+basicConstraints = CA:false
+extendedKeyUsage = clientAuth
 nsCertType = client
 
 [ subject_alt ]
