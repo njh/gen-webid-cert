@@ -28,23 +28,37 @@
 # For more information, please refer to <http://unlicense.org/>
 #
 
-# FIXME: first check for openssl
-
 # Be safe about permissions
-LASTUMASK=`umask`
 umask 077
 
+echo "WebID Self-signed Certificate Generator."
+echo "This script will create a certificate and snippet of RDF for you."
+echo "For more information about WebID visit: http://webid.info/"
+echo
 
-echo "Please enter your name: "
-read NAME
-echo "Please enter your WebID [example https://www.example.com/foaf.rdf#me]: "
-read WEBID
+# Check that OpenSSL is available
+command -v openssl >/dev/null 2>&1 || {
+  echo >&2 "The scripts requires OpenSSL but it is not available. Aborting."
+  exit 1
+}
 
+# Check that certificate already exists
+if [ -e webid.pem -o -e webid.p12 ]; then
+    echo >&2 "webid.pem already exists."
+    echo >&2 "Please delete it if you would like to create a new one."
+    exit 1
+fi
+
+# Ask for certificate details
+read -p "Please enter your name: " NAME
+[ -z "$NAME" ] && { echo "No name given, aborting."; exit 1; }
+read -p "Please enter your WebID [example https://www.example.com/foaf.rdf#me]: " WEBID
+[ -z "$WEBID" ] && { echo "No WebID given, aborting."; exit 1; }
 
 # Create an OpenSSL configuration file
 OPENSSL_CONFIG=`mktemp -q /tmp/webid-openssl-conf.XXXXXXXX`
 if [ ! $? -eq 0 ]; then
-    echo "Could not create temporary client config file. exiting"
+    echo >&2 "Could not create temporary OpenSSL config file. Aborting."
     exit 1
 fi
 
@@ -82,18 +96,35 @@ openssl req -new -batch \
   -out webid.pem \
   -x509
 
-rm $OPENSSL_CONFIG
+RESULT=$?
+
+rm -f $OPENSSL_CONFIG
+
+if [ ! $RESULT -eq 0 ]; then
+    echo >&2 "Failed to create certificate. Aborting."
+    exit 1
+fi
 
 # Display information about the certificate that was generated
 openssl x509 -in webid.pem -noout -text
 
-# FIXME: offer to convert to P12 format
-# echo "Would you like to create a PKCS12 archive? "
-# openssl pkcs12 -export -clcerts \
-#   -name "$NAME" \
-#   -in webid.pem \
-#   -inkey webid.pem \
-#   -out webid.p12
+# Offer to convert to P12 format
+read -p "Would you like to create a P12 file (for import into Firefox)? [y/N]" DOP12
+if [ "$DOP12" == 'y' -o "$DOP12" == 'Y' ]; then
+    openssl pkcs12 -export -clcerts \
+      -name "WebID for $NAME" \
+      -in webid.pem \
+      -inkey webid.pem \
+      -out webid.p12
+fi
+
+# Offer to load the certificate into Keychain on Mac OS X
+if [ -e ~/Library/Keychains/login.keychain ]; then
+    read -p "Would you like to import the certificate into your Mac OS X keychain? [y/N]" DOIMPORT
+    if [ "$DOIMPORT" == 'y' -o "$DOIMPORT" == 'Y' ]; then
+        security import webid.pem -k ~/Library/Keychains/login.keychain
+    fi
+fi
 
 
 # Display RDF/XML
@@ -117,10 +148,6 @@ echo "      </cert:RSAPublicKey>"
 echo "    </cert:key>"
 echo "  </foaf:Person>"
 echo "</rdf:RDF>"
-
-
-# Restore umask
-umask $LASTUMASK
-
-
-# FIXME: offer to load into Keychain on Mac OS X
+echo
+echo "Your certificate has been written to webid.pem in the current directory."
+echo
