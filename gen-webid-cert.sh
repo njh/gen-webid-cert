@@ -110,7 +110,7 @@ openssl x509 -in webid.pem -noout -text
 
 # Offer to convert to P12 format
 read -p "Would you like to create a P12 file (for import into Firefox)? [y/N]" DOP12
-if [ "$DOP12" == 'y' -o "$DOP12" == 'Y' ]; then
+if [ "$DOP12" = "y" -o "$DOP12" = "Y" ]; then
     openssl pkcs12 -export -clcerts \
       -name "WebID for $NAME" \
       -in webid.pem \
