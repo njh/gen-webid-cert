@@ -119,12 +119,12 @@ if [ "$DOP12" = "y" -o "$DOP12" = "Y" ]; then
 fi
 
 # Offer to load the certificate into Keychain on Mac OS X
-if [ -e ~/Library/Keychains/login.keychain ]; then
-    read -p "Would you like to import the certificate into your Mac OS X keychain? [y/N]" DOIMPORT
-    if [ "$DOIMPORT" == 'y' -o "$DOIMPORT" == 'Y' ]; then
-        security import webid.pem -k ~/Library/Keychains/login.keychain
+command -v security >/dev/null 2>&1 && {
+    read -p "Would you like to import the certificate into your Mac OS keychain? [y/N]" DOIMPORT
+    if [ "$DOIMPORT" = "y" -o "$DOIMPORT" = "Y" ]; then
+        security import webid.pem
     fi
-fi
+}
 
 
 # Display RDF/XML
