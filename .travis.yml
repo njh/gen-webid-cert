@@ -1,0 +1,3 @@
+sudo: false
+language: c
+script: ./test.sh
