@@ -33,9 +33,10 @@ addtokeychain='N'
 # Run the script
 input="$name\n$uri\n$genp12\n$addtokeychain\n"
 output="$(printf "$input" | ./gen-webid-cert.sh 2>&1)"
-status="$?"
+result="$?"
 
-assert "[ "$status" -eq 0 ]" "Script returns status of 0"
+# Verify that it worked
+assert "[ '$result' -eq 0 ]" "Script returns status of 0"
 assert "[ -e webid.pem ]" "Creates a file called webid.pem"
 
 
