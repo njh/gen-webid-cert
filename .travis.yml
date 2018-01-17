@@ -1,3 +1,9 @@
 sudo: false
 language: c
-script: ./test.sh
+script:
+- echo "\$SHELL: $SHELL"
+- ls -l $SHELL
+- echo "\$shell: $shell"
+- echo "\$BASH: $BASH"
+- echo "\$ZSH_NAME: $ZSH_NAME"
+- ./test.sh
