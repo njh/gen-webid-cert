@@ -28,6 +28,16 @@ It then outputs:
 If running on Mac OS, it will offer to add the certificate to your Keychain.
 
 
+
+Testing
+-------
+
+A shell script called `test.sh` is provided to ensure that the main script is
+working on your system. 
+
+This script is run by Travis: https://travis-ci.org/njh/gen-webid-cert/
+
+
 License
 -------
 
