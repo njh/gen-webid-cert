@@ -3,6 +3,7 @@
 # Test harness to verify that gen-webid-cert.sh is working
 #
 
+
 # Avoid clobbering an existing key/certificate
 if [ -e webid.pem -o -e webid.p12 ]; then
     echo >&2 "Error: webid.pem or webid.p12 exists."
@@ -38,6 +39,11 @@ result="$?"
 # Verify that it worked
 assert "[ '$result' -eq 0 ]" "Script returns status of 0"
 assert "[ -e webid.pem ]" "Creates a file called webid.pem"
+
+assert "echo '$output' | grep -Eq '<foaf:name>Test User</foaf:name>'" "RDF output contains <foaf:name>"
+
+subject="$(openssl x509 -noout -subject -in webid.pem 2>&1)"
+assert "echo '$subject' | grep -Eq 'Test User'" "Cert subject contains the user's name"
 
 
 # Clean up any files we created
