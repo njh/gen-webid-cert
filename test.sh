@@ -15,7 +15,7 @@ failures=0
 
 assert() {
  eval "${1}"
- if [[ $? -eq 0 ]]; then
+ if [ $? -eq 0 ]; then
    echo " ✓ ${2}"
  else
    echo " ✗ ${2}"
