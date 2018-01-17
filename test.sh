@@ -24,7 +24,14 @@ assert() {
 }
 
 
-input="Test User\nhttp://example.com/test#id\nN\nN\n"
+# Settings
+name="Test User"
+uri="http://example.com/test#id"
+genp12='N'
+addtokeychain='N'
+
+# Run the script
+input="$name\n$uri\n$genp12\n$addtokeychain\n"
 output="$(printf "$input" | ./gen-webid-cert.sh 2>&1)"
 status="$?"
 
