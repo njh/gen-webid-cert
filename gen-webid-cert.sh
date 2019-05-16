@@ -52,8 +52,13 @@ fi
 # Ask for certificate details
 read -p "Please enter your name: " NAME
 [ -z "$NAME" ] && { echo "No name given, aborting."; exit 1; }
-read -p "Please enter your WebID [example https://www.example.com/foaf.rdf#me]: " WEBID
+read -p "Please enter your WebID [example: https://www.example.com/foaf.rdf#me]: " WEBID
 [ -z "$WEBID" ] && { echo "No WebID given, aborting."; exit 1; }
+
+DEFAULT_SUB=`echo "WebID for $NAME" | sed "s|/|-|g"`
+
+read -p "Please label this certificate [default: $DEFAULT_SUB]: " SUBJECT
+SUBJECT=${SUBJECT:-$DEFAULT_SUB}
 
 # Create an OpenSSL configuration file
 OPENSSL_CONFIG=`mktemp -q /tmp/webid-openssl-conf.XXXXXXXX`
@@ -73,7 +78,7 @@ x509_extensions = req_ext
 
 [ req_distinguished_name ] 
 commonName = Common Name (eg, YOUR name)
-commonName_default = WebID for $NAME
+commonName_default = $SUBJECT
 UID = A user ID
 UID_default="$WEBID"
 
@@ -112,7 +117,7 @@ openssl x509 -in webid.pem -noout -text
 read -p "Would you like to create a P12 file (for import into Firefox)? [y/N]" DOP12
 if [ "$DOP12" = "y" -o "$DOP12" = "Y" ]; then
     openssl pkcs12 -export -clcerts \
-      -name "WebID for $NAME" \
+      -name "$SUBJECT" \
       -in webid.pem \
       -inkey webid.pem \
       -out webid.p12
