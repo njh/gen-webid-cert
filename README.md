@@ -1,7 +1,7 @@
 gen-webid-cert.sh
 =================
 
-[![Build Status](https://travis-ci.org/njh/gen-webid-cert.svg?branch=master)](https://travis-ci.org/njh/gen-webid-cert)
+[![Build Status](https://travis-ci.com/njh/gen-webid-cert.svg?branch=master)](https://travis-ci.com/njh/gen-webid-cert)
 
 `gen-webid-cert.sh` is a shell script to create a self-signed certificate for
 use with [WebID](http://webid.info/). A WebID can be used to login to a website
@@ -37,7 +37,7 @@ Testing
 A shell script called `test.sh` is provided to ensure that the main script is
 working on your system. 
 
-This script is run by Travis: https://travis-ci.org/njh/gen-webid-cert/
+This script is run by Travis: https://travis-ci.com/njh/gen-webid-cert/
 
 
 License
